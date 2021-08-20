@@ -1,10 +1,16 @@
-import {FormControlLabel, Checkbox } from "@material-ui/core";
 import React from "react";
+import { FormControlLabel, Checkbox } from "@material-ui/core";
+import { IPhones } from "../interfeces";
 
-const BrandFilter = ({phones, handleChangeCheckbox}) => {
+type BrandFilterProps = {
+    phones : IPhones[]
+    handleChangeCheckbox : (e: React.ChangeEvent<HTMLInputElement>) => void
+}
 
-    function unique(phones) {
-        let arr = [];
+const BrandFilter: React.FC<BrandFilterProps> = ({phones, handleChangeCheckbox}) => {
+
+    function unique(phones : IPhones[]) {
+        let arr : any[] = [];
         for (let phone of phones) {
 
             if(!arr.includes(phone.brand)) {

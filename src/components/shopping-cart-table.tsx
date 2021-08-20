@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react"
 import { createUseStyles } from 'react-jss';
+import { ICartItems } from "./interfeces";
+
+type ShoppingCartTableProps = {
+    cartItems : ICartItems[]
+    onIncreased : (id: number) => void 
+    onDecreased : (id: number) => void   
+    onDeleted : (id: number) => void  
+    orderTotal : number 
+}
 
 const useStyles = createUseStyles({
     total: {
@@ -12,8 +21,8 @@ const useStyles = createUseStyles({
         marginTop: "5px"
     }
 })
-const ShoppingCartTable = ({cartItems, onIncreased, onDecreased, onDeleted, orderTotal}) => {
-    const [itemsInCart, addItems] = useState([]);
+const ShoppingCartTable: React.FC<ShoppingCartTableProps> = ({cartItems, onIncreased, onDecreased, onDeleted, orderTotal}) => {
+    const [itemsInCart, addItems] = useState<ICartItems[]>([]);
     useEffect(() => {
         addItems(cartItems)
     }, [cartItems]);
@@ -27,7 +36,7 @@ const ShoppingCartTable = ({cartItems, onIncreased, onDecreased, onDeleted, orde
         Всього: {orderTotal} &#8372;</div>
     }
 
-    const renderRow = (item, idx) => {
+    const renderRow = (item: ICartItems, idx: number) => {
         return (
             <tr key={item.id}>
                 <td>{idx + 1}</td>
@@ -53,7 +62,7 @@ const ShoppingCartTable = ({cartItems, onIncreased, onDecreased, onDeleted, orde
     };
 
     return (
-        <div className={classes.shoppingCartTable}>
+        <div>
             <h2>Кошик</h2>
             <table className="table">
                 <thead>

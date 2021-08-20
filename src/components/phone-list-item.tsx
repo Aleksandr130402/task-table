@@ -4,6 +4,20 @@ import { createUseStyles } from 'react-jss';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { green } from "@material-ui/core/colors";
 
+type PhoneProps = {
+    actual: boolean
+    title : string
+    price: number
+    coverImage: string
+    brand: string
+}
+
+type PhoneListItemProps = {
+    phoneProps : PhoneProps
+    addItem : () =>  void 
+    onItemSelected : () =>  void  
+}
+
 const theme = createTheme({
     palette: {
         primary: green,
@@ -12,7 +26,7 @@ const theme = createTheme({
 
 const useStyles = createUseStyles({
     phoneListItem : {
-        margin : '15px 0',
+        margin : '15px',
         flexGrow: 3,
         display: "flex",
         flexDirection: "column",
@@ -44,7 +58,8 @@ const useStyles = createUseStyles({
         justifyContent: "space-between"
     }
 })
-const PhoneListItem = ({ phoneProps, addItem, onItemSelected }) => {
+
+const PhoneListItem: React.FC<PhoneListItemProps> = ({ phoneProps, addItem, onItemSelected }) => {
     
     const { actual, title, price, coverImage } = phoneProps;
 
@@ -63,7 +78,7 @@ const PhoneListItem = ({ phoneProps, addItem, onItemSelected }) => {
             <div className={classes.phoneCover}>
                 <img src={coverImage} alt="phone-image" className={classes.phoneImage} onClick={onItemSelected}/>
             </div>
-            <div className={classes.phoneActual}>{actual ? 'В наявності' : 'Немає'}</div>
+            <div>{actual ? 'В наявності' : 'Немає'}</div>
             <div className={classes.phoneTitle}>{title}</div> 
             <div className={classes.phoneBottom}>
                 <div className={classes.phonePrice}>{price} &#8372;</div>

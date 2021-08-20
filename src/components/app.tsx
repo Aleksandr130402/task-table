@@ -1,13 +1,51 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { Route, Switch } from "react-router-dom";
+import { createUseStyles, jss } from "react-jss";
 
 import { HomePage, CartPage } from './pages';
 import ShopHeader from "./shop-header";
 import withPhonestoreService from "./hoc/with-phonestore-service";
 import PhoneDetails from "./phone-details";
+import { ICartItems, IPhones } from "./interfeces";
+import PhonestoreService from "../services/phonestore-service";
 
-class App extends React.Component {
-    state = {
+const styles = {
+    '@global': {
+        body: {
+            height: '100%',
+            margin: 0
+        },
+        html: {
+            height: '100%',
+            margin: 0
+        }
+    },
+    appContainer: {
+        height: '100%'
+    }
+}
+
+type MyProps = {
+    phonestoreService: PhonestoreService
+};
+type MyState = {
+    phones: IPhones[]
+    filteredPhones: IPhones[]
+    cartItems: ICartItems[]
+    numItems: number
+    total: number
+    orderTotal: number
+    firstValue: string
+    secondValue: string
+    priceFrom: number
+    priceTo: number
+    priceFilter: boolean
+    brandFilter: boolean
+    brandCheckBoxes: string[]
+};
+
+class App extends React.Component<MyProps, MyState> {
+    state : MyState = {
         phones: [],
         filteredPhones: [],
         cartItems: [],
@@ -30,13 +68,32 @@ class App extends React.Component {
         });       
     }
 
-    findPhoneInStore(id) {
+    findPhoneInStore(id: number) {
         return this.state.phones.find((phone) => phone.id === id);
     }
-    findPhoneIndex(phoneId) {
+    findPhoneIndex(phoneId: number) {
         return this.state.cartItems.findIndex((item) => item.id === phoneId)
     }
-    updateCartItems(cartItems, item, idx) {
+
+    updateCartItem(phone: IPhones, item: ICartItems, quantity: number) {
+        
+        if(item) {
+            return {
+                ...item,
+                count: item.count + quantity,
+                total: item.total + quantity * phone.price 
+            }
+        } else {
+            return {
+                id: phone.id,
+                title: phone.title,
+                count: 1,
+                total: phone.price
+            }
+        }     
+    }
+
+    updateCartItems(cartItems: ICartItems[], item: ICartItems, idx: number) {
 
         if(item.count === 0) {
             return [
@@ -45,7 +102,7 @@ class App extends React.Component {
             ];
         }
         
-        if(idx === -1) {
+        if(idx === -1 || undefined) {
             return [
                 ...cartItems,
                 item
@@ -58,53 +115,46 @@ class App extends React.Component {
             ...cartItems.slice(idx + 1)
         ];
     };
-    updateCartItem(phone, item = {}, quantity) {
-        const { 
-            id = phone.id,
-            count = 0,
-            title = phone.title,
-            total = 0 
-        } = item;
 
-        return {
-            id,
-            title,   
-            count: count + quantity,
-            total: total + quantity * phone.price 
-        }             
-    }
-    addedToCart(id) {
+    addedToCart(id: number) {
         const {cartItems, numItems, total, orderTotal} = this.state;
 
         const phone = this.findPhoneInStore(id);
-        const itemIndex = this.findPhoneIndex(phone.id);
-        const item = cartItems[itemIndex];
 
-        const newItem = this.updateCartItem(phone, item, 1);
+        if( phone !== undefined) {
+            const itemIndex = this.findPhoneIndex(phone.id);
+            const item = cartItems[itemIndex];
 
-        this.setState({
-            cartItems: this.updateCartItems(cartItems, newItem, itemIndex),
-            numItems: numItems + 1,
-            total: total + phone.price,
-            orderTotal: orderTotal + phone.price
-        })
+            const newItem = this.updateCartItem(phone, item, 1);
+
+            this.setState({
+                cartItems: this.updateCartItems(cartItems, newItem, itemIndex),
+                numItems: numItems + 1,
+                total: total + phone.price,
+                orderTotal: orderTotal + phone.price
+            })
+        }
     } 
-    onDecreased(id) {
+    onDecreased(id: number) {
         const {cartItems, numItems, total, orderTotal} = this.state;
 
         const phone = this.findPhoneInStore(id);
-        const itemIndex = this.findPhoneIndex(phone.id);
-        const item = cartItems[itemIndex];
-        const newItem = this.updateCartItem(phone, item, -1);
 
-        this.setState({
-            cartItems: this.updateCartItems(cartItems, newItem, itemIndex),
-            numItems: numItems - 1,
-            total: total - phone.price,
-            orderTotal: orderTotal - phone.price
-        })
+        if( phone !== undefined) {
+
+            const itemIndex = this.findPhoneIndex(phone.id);
+            const item = cartItems[itemIndex];
+            const newItem = this.updateCartItem(phone, item, -1);
+
+            this.setState({
+                cartItems: this.updateCartItems(cartItems, newItem, itemIndex),
+                numItems: numItems - 1,
+                total: total - phone.price,
+                orderTotal: orderTotal - phone.price
+            })
+        }
     }
-    onDeleted(id) {
+    onDeleted(id: number) {
         const {cartItems, numItems, total, orderTotal} = this.state;
 
         const itemIndex = this.findPhoneIndex(id);
@@ -120,25 +170,25 @@ class App extends React.Component {
             orderTotal: orderTotal - item.total
         })
     }
-    onChangeFirst(e) {
+    onChangeFirst(e: ChangeEvent<HTMLInputElement>) {
         const firstValue = e.target.value;
         
         this.setState({firstValue})  
 
         if(firstValue !== '' ) {
             this.setState({
-                priceFrom: firstValue                              
+                priceFrom: +firstValue                              
             })
         }
     }
-    onChangeSecond(e) {    
+    onChangeSecond(e: ChangeEvent<HTMLInputElement>) {    
         const secondValue = e.target.value; 
 
         this.setState({secondValue})     
 
         if(secondValue !== '') {
             this.setState({
-                priceTo: secondValue                              
+                priceTo: +secondValue                              
             })
         }
     }
@@ -159,15 +209,12 @@ class App extends React.Component {
         if( priceFrom >= 0 && priceTo > 0 ) {
 
             if( brandFilter ) {
-         
-                const items = this.checkCheckboxes();
-                filtered = items.filter((phone) => { 
+                
+                filtered = filteredPhones.filter((phone) => { 
                     return (
                         phone.price > priceFrom && phone.price < priceTo 
                     )});
-                
             } else {
-                
                 filtered = phones.filter((phone) => { 
                     return (
                         phone.price > priceFrom && phone.price < priceTo 
@@ -186,13 +233,11 @@ class App extends React.Component {
         })
     }
 
-    sortBrand = (e) => {
+    sortBrand = (e: ChangeEvent<HTMLInputElement>) => {
         const {phones, 
             filteredPhones, 
             brandCheckBoxes, 
-            costFilter,
-            priceFrom,
-            priceTo} = this.state;
+            priceFilter} = this.state;
         const checkbox = e.target;
         let filtered;
 
@@ -205,7 +250,7 @@ class App extends React.Component {
                 brandFilter: true
             })
 
-            if( costFilter ) {
+            if( priceFilter ) {
 
                 this.sortPrice();
             } 
@@ -228,7 +273,7 @@ class App extends React.Component {
         } 
     }
 
-    handleChangeCheckbox (e) {
+    handleChangeCheckbox (e: ChangeEvent<HTMLInputElement>) {
         const {brandCheckBoxes} = this.state;
         const checkbox = e.target;
 
@@ -272,8 +317,10 @@ class App extends React.Component {
             brandFilter,
             orderTotal} = this.state;
 
+        const { classes } = jss.createStyleSheet(styles).attach();
+
         return (
-            <main role="main" className="container">
+            <div className={classes.appContainer}>
             <ShopHeader numItems={numItems} total={total}/>              
             <Switch>
                 <Route 
@@ -302,7 +349,7 @@ class App extends React.Component {
                         return (
                             <PhoneDetails 
                                 itemId={id} 
-                                addItem={(id) => this.addedToCart(id)}
+                                addItem={(id: number) => this.addedToCart(id)}
                             />
                         )
                     }} 
@@ -318,7 +365,7 @@ class App extends React.Component {
                         />}
                 />             
             </Switch>
-            </main>
+            </div>
         );
     }
 }

@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from "react";
 import PhoneListItem from './phone-list-item';
 import { createUseStyles } from 'react-jss';
-import withPhonestoreService from "./hoc/with-phonestore-service";
+import { IPhones } from "./interfeces";
 
+type PhoneListProps = {
+    addItem : (id: number) => void
+    phones : IPhones[]
+    onItemSelected : (id: number) => void
+}
 
 const useStyles = createUseStyles({
     phoneList : {
         display : 'flex',
         flexWrap: "wrap",
-        justifyContent: "space-between",
+        justifyContent: "flex-start",
         listStyle : 'none'
     }
 })
 
-const PhoneList = ({ phonestoreService, addItem, phones, onItemSelected }) => {
-    const [phonesList, addPhonesList] = useState([]);
+const PhoneList: React.FC<PhoneListProps> = ({ addItem, phones, onItemSelected }) => {
+    const [phonesList, addPhonesList] = useState<IPhones[]>([]);
     useEffect(() => {
         addPhonesList(phones);
     }, [phones]);
+
     const classes = useStyles();
 
     return (

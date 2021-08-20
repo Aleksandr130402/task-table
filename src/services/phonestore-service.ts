@@ -1,6 +1,8 @@
+import { IPhones } from "../components/interfeces";
+
 export default class PhonestoreService {
 
-    getPhones() {
+    getPhones() : IPhones[] {
         return [
             {
                 id: 1,

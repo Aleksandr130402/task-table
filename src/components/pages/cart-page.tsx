@@ -1,7 +1,16 @@
 import React from 'react'
 import ShoppingCartTable from '../shopping-cart-table';
+import { ICartItems } from "../interfeces";
 
-const CartPage = ({cartItems, onIncreased, onDecreased, onDeleted, orderTotal}) => {
+type CartPageProps = {
+    cartItems : ICartItems[]
+    onIncreased : (id: number) => void 
+    onDecreased : (id: number) => void   
+    onDeleted : (id: number) => void  
+    orderTotal : number 
+}
+
+const CartPage: React.FC<CartPageProps> = ({cartItems, onIncreased, onDecreased, onDeleted, orderTotal}) => {
     return <ShoppingCartTable 
             cartItems={cartItems} 
             onIncreased={(id) => onIncreased(id)} 
