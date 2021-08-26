@@ -25,16 +25,18 @@ const theme = createTheme({
 });
 
 const useStyles = createUseStyles({
-    phoneListItem : {
-        margin : '15px',
-        flexGrow: 3,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-around",
-        padding: "20px",
+    phoneListItem :{     
+        border: "1px solid #E0E0E0",
         height: "395px",
-        width: "254px",
-        border: "1px solid #E0E0E0"
+        display: "flex",
+        padding: "16px",
+        position: "relative",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        borderRadius: "4px"
+    },
+    mb: {
+
     },
     phoneCover: {       
         width: '120px',
@@ -56,7 +58,34 @@ const useStyles = createUseStyles({
         display: "flex",
         alignItems: "flex-end",
         justifyContent: "space-between"
-    }
+    },
+    phoneActions: {
+        position: "absolute",
+        zIndex: 1,
+        right: "12px",
+        top: "12px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        '& i': `
+                cursor: pointer;
+                color: #595858;
+                -webkit-box-sizing: content-box;
+                box-sizing: content-box;
+                border-radius: 4px;
+                padding: 4px;
+        `,
+        '& i:first-child': {
+            marginBottom: "8px"
+        }
+    },
+    "@media (max-width: 500px)": {
+        phoneListItem: `
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        `
+    },
+    
 })
 
 const PhoneListItem: React.FC<PhoneListItemProps> = ({ phoneProps, addItem, onItemSelected }) => {
@@ -75,6 +104,10 @@ const PhoneListItem: React.FC<PhoneListItemProps> = ({ phoneProps, addItem, onIt
     }
     return (
         <div className={classes.phoneListItem}>
+            <div className={classes.phoneActions}>
+                <i className="far fa-heart"/>
+                <i className="fas fa-balance-scale"/>
+            </div>
             <div className={classes.phoneCover}>
                 <img src={coverImage} alt="phone-image" className={classes.phoneImage} onClick={onItemSelected}/>
             </div>

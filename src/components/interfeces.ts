@@ -11,5 +11,6 @@ export interface ICartItems {
     id: number,
     title: string,
     count: number,
-    total: number
+    total: number,
+    image: string
 }

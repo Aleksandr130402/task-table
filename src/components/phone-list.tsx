@@ -10,11 +10,26 @@ type PhoneListProps = {
 }
 
 const useStyles = createUseStyles({
-    phoneList : {
-        display : 'flex',
-        flexWrap: "wrap",
-        justifyContent: "flex-start",
-        listStyle : 'none'
+    phoneList : `
+        display: grid;
+        width: 100%;
+        grid-gap: 20px;
+        grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
+    `,
+    "@media (max-width: 950px)": {
+        phoneList: `
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            `
+    },
+    "@media (max-width: 768px)": {
+        phoneList: {
+            "&:nth-child(odd)": `
+            border-left: none;
+            padding-left: 0;
+            `,
+            gridTemplateColumns: "repeat(2,minmax(0,1fr))",
+            gridGap: 0
+        }
     }
 })
 
@@ -27,23 +42,23 @@ const PhoneList: React.FC<PhoneListProps> = ({ addItem, phones, onItemSelected }
     const classes = useStyles();
 
     return (
-    <ul className={classes.phoneList}>
+    <div className={classes.phoneList}>
         {
             phonesList.map((phone) => {
                 const {id, ...phoneProps} = phone;
                 
                 return (  
-                    <li key={id}>                        
+                    <div key={id}>                        
                         <PhoneListItem 
                             phoneProps={phoneProps} 
                             addItem={() => addItem(id)} 
                             onItemSelected={() => onItemSelected(id)}
                         />                         
-                    </li>          
+                    </div>          
                 )
             })
         }
-    </ul>
+    </div>
     ) 
 }
 

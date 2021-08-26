@@ -1,8 +1,8 @@
 import React, { ChangeEvent } from "react";
 import { Route, Switch } from "react-router-dom";
-import { createUseStyles, jss } from "react-jss";
+import { jss } from "react-jss";
 
-import { HomePage, CartPage } from './pages';
+import { HomePage } from './pages';
 import ShopHeader from "./shop-header";
 import withPhonestoreService from "./hoc/with-phonestore-service";
 import PhoneDetails from "./phone-details";
@@ -18,11 +18,20 @@ const styles = {
         html: {
             height: '100%',
             margin: 0
-        }
+        },
+        "input::-webkit-outer-spin-button, input::-webkit-inner-spin-button": `
+            /* display: none; <- Crashes Chrome on hover */
+            -webkit-appearance: none;
+            margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+        `
     },
-    appContainer: {
-        height: '100%'
-    }
+    appContainer: `
+        height: 100%;
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+        overflow: hidden;
+    `
 }
 
 type MyProps = {
@@ -88,7 +97,8 @@ class App extends React.Component<MyProps, MyState> {
                 id: phone.id,
                 title: phone.title,
                 count: 1,
-                total: phone.price
+                total: phone.price,
+                image: phone.coverImage
             }
         }     
     }
@@ -321,7 +331,13 @@ class App extends React.Component<MyProps, MyState> {
 
         return (
             <div className={classes.appContainer}>
-            <ShopHeader numItems={numItems} total={total}/>              
+            <ShopHeader numItems={numItems} 
+                        cartItems={this.state.cartItems}
+                        onIncreased={(id) => this.addedToCart(id)}
+                        onDecreased={(id) => this.onDecreased(id)} 
+                        onDeleted={(id) => this.onDeleted(id)}
+                        orderTotal={orderTotal}
+            />              
             <Switch>
                 <Route 
                     path="/"
@@ -353,17 +369,7 @@ class App extends React.Component<MyProps, MyState> {
                             />
                         )
                     }} 
-                />
-                <Route
-                    path="/cart"
-                    render={() => <CartPage 
-                        cartItems={this.state.cartItems}
-                        onIncreased={(id) => this.addedToCart(id)}
-                        onDecreased={(id) => this.onDecreased(id)} 
-                        onDeleted={(id) => this.onDeleted(id)}
-                        orderTotal={orderTotal}
-                        />}
-                />             
+                />            
             </Switch>
             </div>
         );
