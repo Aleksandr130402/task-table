@@ -206,65 +206,66 @@ const styles = {
 }
 
 const ShopHeader: React.FC<ShopHeaderProps> = ({numItems, cartItems, onIncreased, onDecreased, onDeleted, orderTotal}): JSX.Element => {
-const {classes} = jss.createStyleSheet(styles).attach();
 
-const [state, setState] = React.useState({
-    left: false,
-    right: false
-  });
+    const {classes} = jss.createStyleSheet(styles).attach();
 
-  const toggleDrawer = (anchor: Anchor, open: boolean) => (
-      event: React.MouseEvent
-  ) => {
-    setState({ ...state, [anchor]: open });
-  };
+    const [state, setState] = React.useState({
+        left: false,
+        right: false
+    });
 
-  
+    const toggleDrawer = (anchor: Anchor, open: boolean) => (
+        event: React.MouseEvent
+    ) => {
+        setState({ ...state, [anchor]: open });
+    };
 
-  const list = (anchor: Anchor) => {
-    let listItems;
+    const list = (anchor: Anchor) => {
+        let listItems;
 
-    if(anchor === 'left') {
-        listItems = <List>
-        {['Головна', 
-        'Apple', 
-        'Cмартфони і телефони', 
-        'Ноутбуки, планшети, ПК',
-        'Телевізори та відео', 
-        'Гаджети', 
-        'Навушники та аудіо', 
-        'Game Zone',
-        'Аксесуари', 
-        'Xiaomi', 
-        'Побутова техніка', 
-        'Автотовари', 
-        'Персональний транспорт',
-        'Дитячі товари'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
+        if(anchor === 'left') {
+            listItems = <List>
+            {['Головна', 
+            'Apple', 
+            'Cмартфони і телефони', 
+            'Ноутбуки, планшети, ПК',
+            'Телевізори та відео', 
+            'Гаджети', 
+            'Навушники та аудіо', 
+            'Game Zone',
+            'Аксесуари', 
+            'Xiaomi', 
+            'Побутова техніка', 
+            'Автотовари', 
+            'Персональний транспорт',
+            'Дитячі товари'].map((text, index) => (
+            <ListItem button key={text}>
+                <ListItemText primary={text} />
+            </ListItem>
+            ))}
+        </List>
+        }
+
+        if(anchor === 'right') {
+            listItems = <ShoppingCartTable 
+                cartItems={cartItems} 
+                onIncreased={(id) => onIncreased(id)} 
+                onDecreased={(id) => onDecreased(id)} 
+                onDeleted={(id) => onDeleted(id)}
+                orderTotal={orderTotal}
+            />
+        }
+
+        return (
+            <div role="presentation" className={(anchor === 'right')? classes.rightBar : classes.leftBar}>
+                <i className={`fas fa-times ${classes.closeBar}`} onClick={toggleDrawer(anchor, false)}/>
+                {listItems}
+            </div>
+        )
     }
-    if(anchor === 'right') {
-        listItems = <ShoppingCartTable 
-            cartItems={cartItems} 
-            onIncreased={(id) => onIncreased(id)} 
-            onDecreased={(id) => onDecreased(id)} 
-            onDeleted={(id) => onDeleted(id)}
-            orderTotal={orderTotal}
-        />
-    }
-    return (
-        <div role="presentation" className={(anchor === 'right')? classes.rightBar : classes.leftBar}>
-            <i className={`fas fa-times ${classes.closeBar}`} onClick={toggleDrawer(anchor, false)}/>
-            {listItems}
-        </div>
-    )
-  }
       
     let span: {} | null | undefined;        
-
+    // отобразить к-во элементов в корзине
     if(numItems) {
         span = <span className={classes.productCount}>{numItems}</span>
     }

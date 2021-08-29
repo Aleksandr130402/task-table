@@ -169,7 +169,9 @@ const useStyles = createUseStyles({
     }
 })
 const ShoppingCartTable: React.FC<ShoppingCartTableProps> = ({cartItems, onIncreased, onDecreased, onDeleted, orderTotal}) => {
+    
     const [itemsInCart, addItems] = useState<ICartItems[]>([]);
+    //якорь для отображения боковой панели
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     
     const open = Boolean(anchorEl);
@@ -199,7 +201,7 @@ const ShoppingCartTable: React.FC<ShoppingCartTableProps> = ({cartItems, onIncre
         'Додати в обране',
         'Видалити'
     ];
-
+    //высота элемента списка в мобильном меню
     const ITEM_HEIGHT = 48;
 
     if(itemsInCart.length === 0) {

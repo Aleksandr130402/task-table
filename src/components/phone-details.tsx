@@ -59,8 +59,8 @@ const styles = makeStyles((theme: Theme) =>
     }),
 );
 
-
 const PhoneDetails: React.FC<PhoneDetailsProps> = ({ itemId, phonestoreService, addItem }) => {
+    // детали про выбранный телефон
     const [renderItem, addRenderItem] = useState<IPhones>({
         id: 0,
         actual: false,
@@ -69,15 +69,14 @@ const PhoneDetails: React.FC<PhoneDetailsProps> = ({ itemId, phonestoreService, 
         coverImage: '',
         brand: ''
     });
-    
+    // сделать кнопку с цветом активной
     const [activeButton, addActive] = useState(0);
+    // значение выбранной Tab
     const [value, setValue] = useState(0);
 
-    const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-        setValue(newValue);
-    };
-
+    // получить все телефоны
     const phones = phonestoreService.getPhones();
+    // доступные цвета телефонов
     const phoneColors = ["#ff0", "#00f", "#000"];
 
     useEffect(() => {
@@ -86,8 +85,6 @@ const PhoneDetails: React.FC<PhoneDetailsProps> = ({ itemId, phonestoreService, 
             addRenderItem(newItem);
         }    
     },[itemId]);
-
-    let button;
 
     const theme = createTheme({
         palette: {
@@ -201,10 +198,12 @@ const PhoneDetails: React.FC<PhoneDetailsProps> = ({ itemId, phonestoreService, 
             }
         }
     })
-
+    // jsx styles
     const classes = useStyles();
+    // material-ui styles
     const clazz = styles();
 
+    // показать определенную панель
     function TabPanel(props: TabPanelProps) {
         const { children, value, index, ...other } = props;
       
@@ -224,7 +223,7 @@ const PhoneDetails: React.FC<PhoneDetailsProps> = ({ itemId, phonestoreService, 
           </div>
         );
     }
-    
+    // соответствие каждого Tab и панели
     function a11yProps(index: any) {
         return {
             id: `simple-tab-${index}`,
@@ -232,6 +231,12 @@ const PhoneDetails: React.FC<PhoneDetailsProps> = ({ itemId, phonestoreService, 
         };
     }
 
+    const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+        setValue(newValue);
+    };
+
+    let button;
+    // если есть в наличии отобразить кнопку
     if(renderItem.actual) {
         button = <ThemeProvider theme={theme}>
         <Button variant="contained" color="primary" onClick={() => addItem(renderItem.id)}>

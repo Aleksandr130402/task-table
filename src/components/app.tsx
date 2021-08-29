@@ -70,6 +70,7 @@ class App extends React.Component<MyProps, MyState> {
         brandCheckBoxes: []
     }
     
+    //получить все телефоны
     componentDidMount() {
         const data = this.props.phonestoreService.getPhones();
         this.setState({
@@ -77,13 +78,15 @@ class App extends React.Component<MyProps, MyState> {
         });       
     }
 
+    // искать телефон по id в массиве phones
     findPhoneInStore(id: number) {
         return this.state.phones.find((phone) => phone.id === id);
     }
+    // искать индекс телефона по id в корзине
     findPhoneIndex(phoneId: number) {
         return this.state.cartItems.findIndex((item) => item.id === phoneId)
     }
-
+    // изменить количество в корзине, если item нет в корзине создать такой объект 
     updateCartItem(phone: IPhones, item: ICartItems, quantity: number) {
         
         if(item) {
@@ -103,8 +106,10 @@ class App extends React.Component<MyProps, MyState> {
         }     
     }
 
+    // обновить элементы в корзине
     updateCartItems(cartItems: ICartItems[], item: ICartItems, idx: number) {
 
+        // если количество элемента равно 0, вернуть все элементы кроме него
         if(item.count === 0) {
             return [
                 ...cartItems.slice(0, idx),
@@ -112,6 +117,7 @@ class App extends React.Component<MyProps, MyState> {
             ];
         }
         
+        // если элемента нет в корзине, добавить в конец 
         if(idx === -1 || undefined) {
             return [
                 ...cartItems,
@@ -119,6 +125,7 @@ class App extends React.Component<MyProps, MyState> {
             ];
         }
 
+        // добавить элемент с новым количеством
         return [
             ...cartItems.slice(0, idx),
             item,
@@ -134,7 +141,7 @@ class App extends React.Component<MyProps, MyState> {
         if( phone !== undefined) {
             const itemIndex = this.findPhoneIndex(phone.id);
             const item = cartItems[itemIndex];
-
+            
             const newItem = this.updateCartItem(phone, item, 1);
 
             this.setState({
@@ -145,6 +152,7 @@ class App extends React.Component<MyProps, MyState> {
             })
         }
     } 
+
     onDecreased(id: number) {
         const {cartItems, numItems, total, orderTotal} = this.state;
 
@@ -164,6 +172,7 @@ class App extends React.Component<MyProps, MyState> {
             })
         }
     }
+
     onDeleted(id: number) {
         const {cartItems, numItems, total, orderTotal} = this.state;
 
@@ -180,9 +189,10 @@ class App extends React.Component<MyProps, MyState> {
             orderTotal: orderTotal - item.total
         })
     }
+
     onChangeFirst(e: ChangeEvent<HTMLInputElement>) {
         const firstValue = e.target.value;
-        
+     
         this.setState({firstValue})  
 
         if(firstValue !== '' ) {
@@ -202,12 +212,14 @@ class App extends React.Component<MyProps, MyState> {
             })
         }
     }
+
     sortPrice = () => {
         const {priceFrom, 
             priceTo, 
             phones, 
             brandFilter, 
             filteredPhones} = this.state;
+
         let filtered;
 
         if(priceFrom == 0 && priceTo == 0) {
@@ -217,13 +229,14 @@ class App extends React.Component<MyProps, MyState> {
         }
 
         if( priceFrom >= 0 && priceTo > 0 ) {
-
+            // если true, сортировать по цене массив уже отсортированный по бренду
             if( brandFilter ) {
                 
                 filtered = filteredPhones.filter((phone) => { 
                     return (
                         phone.price > priceFrom && phone.price < priceTo 
                     )});
+            // сортировать по цене
             } else {
                 filtered = phones.filter((phone) => { 
                     return (
@@ -248,7 +261,9 @@ class App extends React.Component<MyProps, MyState> {
             filteredPhones, 
             brandCheckBoxes, 
             priceFilter} = this.state;
+
         const checkbox = e.target;
+
         let filtered;
 
         if(checkbox.checked) {
@@ -269,6 +284,7 @@ class App extends React.Component<MyProps, MyState> {
         if(!checkbox.checked) {
             filtered = filteredPhones.filter((phone) => phone.brand !== checkbox.name);
             
+            // если последний чекбокс
             if(brandCheckBoxes.length === 1) {
                 this.setState({
                     filteredPhones: filtered,
@@ -286,10 +302,10 @@ class App extends React.Component<MyProps, MyState> {
     handleChangeCheckbox (e: ChangeEvent<HTMLInputElement>) {
         const {brandCheckBoxes} = this.state;
         const checkbox = e.target;
-
+        
         if( checkbox.checked ) {
             const newItem = checkbox.name;
-
+            // добавить имя чекбокса в массив
             this.setState({
                 brandCheckBoxes: [
                     ...brandCheckBoxes, 
@@ -315,8 +331,7 @@ class App extends React.Component<MyProps, MyState> {
     }
     
     render() {
-        const {numItems, 
-            total, 
+        const {numItems,  
             firstValue, 
             secondValue, 
             priceFrom, 

@@ -93,6 +93,7 @@ const PhoneListItem: React.FC<PhoneListItemProps> = ({ phoneProps, addItem, onIt
     const { actual, title, price, coverImage } = phoneProps;
 
     const classes = useStyles();
+    
     let button;
 
     if(actual) {

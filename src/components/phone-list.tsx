@@ -34,7 +34,9 @@ const useStyles = createUseStyles({
 })
 
 const PhoneList: React.FC<PhoneListProps> = ({ addItem, phones, onItemSelected }) => {
+    
     const [phonesList, addPhonesList] = useState<IPhones[]>([]);
+    
     useEffect(() => {
         addPhonesList(phones);
     }, [phones]);

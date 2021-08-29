@@ -139,8 +139,9 @@ const HomePage: React.FC<HomePageProps> = (props) => {
             `
         }
     })
-
+    // jsx styles
     const classes = useStyles();
+    // material-ui styles
     const clazz = styles();
     const history = useHistory();
 
@@ -159,13 +160,14 @@ const HomePage: React.FC<HomePageProps> = (props) => {
         filteredPhones} = props;
 
     let renderPhones;
-
+    // отобразить отфильтрованные элементы
     if(priceFilter || brandFilter) {
         renderPhones = filteredPhones;
     } else {
         renderPhones = phones;
     }
 
+    // список элементов боковой панели
     const list = (anchor: Anchor) => {
         return (
             <div role="presentation">
