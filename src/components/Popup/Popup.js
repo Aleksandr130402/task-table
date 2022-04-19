@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
 
-export default function Popup({close}) {
+import './style.css'
+
+export default function Popup() {
+
+	const navigate = useNavigate();
 
 	const inputDateRef = useRef(null);
 	const inputUserRef = useRef(null);
@@ -52,6 +57,11 @@ export default function Popup({close}) {
 		}
 	}
 
+
+	function handleClose() {
+		navigate('/');	
+	}
+
 	useEffect(() => {
 		if(inputDateRef.current) {
 			inputDateRef.current.valueAsDate = new Date();
@@ -59,7 +69,7 @@ export default function Popup({close}) {
 	},[])
 
 	return (
-		<form>
+		<form className='user-form'>
 			<table>
 			<thead>
 				<tr>
@@ -100,8 +110,8 @@ export default function Popup({close}) {
 				</tr>
 			</tbody>
 			</table>
-			<button id="add-button" onClick={addData}>Add</button>
-			<button id="close-button" onClick={close}>Close</button>
+			<button id="add-button" onClick={addData}>Add</button>	
+			<button id="close-button" onClick={handleClose}>Close</button>
 		</form>
 	)
 }

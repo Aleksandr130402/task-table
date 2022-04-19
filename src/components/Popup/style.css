@@ -1,0 +1,25 @@
+.user-form table {
+	border-collapse: collapse;
+}
+
+.user-form th,
+.user-form td {
+	padding: 3px;
+	border: 1px solid;
+}
+
+.user-form input,
+.user-form select {
+	max-width: 115px;
+	margin: 15px;
+}
+
+.user-form button {
+	margin-left: 15px;
+}
+
+.user-form {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
