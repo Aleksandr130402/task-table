@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import './style.css'
 
-export default function Popup() {
+export default function Popup({addNewValue}) {
 
 	const navigate = useNavigate();
 
@@ -54,6 +54,7 @@ export default function Popup() {
 			}
 
 			setTableData([...tableData, newItem])
+			addNewValue(userData.num)
 		}
 	}
 
@@ -81,8 +82,8 @@ export default function Popup() {
 			</thead>
 			<tbody>	
 				{	
-				tableData.map( item => (
-					<tr>
+				tableData.map( (item, key) => (
+					<tr key={key}>
 						<td>{item.num}</td>
 						<td>{item.date}</td>
 						<td>{item.user}</td>

@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 
 import { Link } from 'react-router-dom';
 
@@ -12,11 +12,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Divider } from '@material-ui/core';
 
-import tableData from '../../mock/table-data';
-
 import './style.css'
 
-const years = [2017, 2018, 2019];
 
 const useStyles = makeStyles({
   table: {
@@ -24,49 +21,63 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(name, params) {
-  console.log(params)
-  return { name, params };
-}
+export default function MainTable({data, addTableCell}) {
+	
+	const [years] = useState([2017, 2018, 2019]);
+	const [rows, setRows] = useState([]);
+	const classes = useStyles();
 
-function getValuesForYears(regionName) {
-  const values = [];
+	const getWW = useCallback((yy, zz) => {
+		return yy * zz;
+	},[])
 
-  const currentRegion = tableData[regionName];
-  
-  years.forEach(item => {
-    if(Object.keys(currentRegion.G).includes(item.toString())) {
-      values.push(currentRegion.G[item])
-    } else {
-      values.push({
-				XX: {
-					value: 0,
-					dateRelease: '-'
-				},
-				YY: {
-					value: 0,
-					dateRelease: '-'
-				},
-				ZZ: {
-					value: 0,
-					dateRelease: '-'
+	useEffect(() => {
+		function createData(name, params) {
+			console.log(params)
+			return { name, params };
+		}
+
+		const getValuesForYears = (regionName) => {
+			const values = [];
+
+			const currentRegion = data[regionName];
+		
+			years.forEach(item => {
+				if(Object.keys(currentRegion.G).includes(item.toString())) {
+					values.push({
+						year: item,
+						properties: currentRegion.G[item]
+					})
+				} else {
+					values.push({
+						year: item,
+						properties: {
+							XX: {
+								value: 0,
+								dateRelease: '-'
+							},
+							YY: {
+								value: 0,
+								dateRelease: '-'
+							},
+							ZZ: {
+								value: 0,
+								dateRelease: '-'
+							}
+						}			
+					})
 				}
 			})
-    }
-  }) 
+			
+			return values;
+		}
 
-  return values;
-}
-
-const rows = [
-  createData('Kyivska', getValuesForYears('Kyivska')),
-  createData('Odeska', getValuesForYears('Odeska')),
-  createData('Lvivska', getValuesForYears('Lvivska'))
-];
-
-
-export default function MainTable() {
-	const classes = useStyles();
+		setRows([
+			createData('Kyivska', getValuesForYears('Kyivska')),
+			createData('Odeska', getValuesForYears('Odeska')),
+			createData('Lvivska', getValuesForYears('Lvivska'))
+		]);
+	},[data, years]);
 
 	return (
 		<TableContainer component={Paper}>
@@ -75,55 +86,54 @@ export default function MainTable() {
 					<TableRow>
 						<TableCell rowSpan={2}>regions</TableCell>
 						{years.map((year, key) => (
-							<TableCell key={key} align="center" colSpan={3}>
+							<TableCell key={key} align="center" colSpan={4}>
 								{year}            
 							</TableCell> 
 						))}                    
 					</TableRow>
 					<TableRow>
-						<TableCell>xx</TableCell>
-						<TableCell>yy</TableCell>
-						<TableCell>zz</TableCell>
-						<TableCell>xx</TableCell>
-						<TableCell>yy</TableCell>
-						<TableCell>zz</TableCell>
-						<TableCell>xx</TableCell>
-						<TableCell>yy</TableCell>
-						<TableCell>zz</TableCell>
+						{years.map(year => (
+							<Fragment key={year}>
+								<TableCell>xx</TableCell>
+								<TableCell>yy</TableCell>
+								<TableCell>zz</TableCell>
+								<TableCell>ww</TableCell>
+							</Fragment>
+						))}
 					</TableRow>       
 				</TableHead>
 				<TableBody>
 					{rows.map((row) => {
 						return(
 							<TableRow key={row.name}>
-									<TableCell component="th" scope="row">
-										{row.name}
-									</TableCell>
-									{row.params.map((param, key) => (         
-										<Fragment key={key}>
-											<TableCell>
-												<Link to="popup" target="_blank">
-													{param.XX.value}
-												<Divider/>
-												{param.XX.dateRelease}
-												</Link>
-											</TableCell>
-											<TableCell>
-												<Link to="popup" target="_blank">
-												{param.YY.value}
-												<Divider/>
-												{param.XX.dateRelease}
-												</Link>
-											</TableCell>
-											<TableCell>
-												<Link to="popup" target="_blank">
-												{param.ZZ.value}
-												<Divider/>
-												{param.XX.dateRelease}
-												</Link>
-											</TableCell>
-										</Fragment>                
-									))}           
+								<TableCell component="th" scope="row">
+									{row.name}
+								</TableCell>
+								{
+									row.params.map((param, key) => {
+										return (
+											<Fragment key={key}>
+												{
+												Object.keys(param.properties).map(property => (
+													<TableCell key={property}>
+														<Link 
+															to={`/popup/${param.properties[property].value}`} 
+															onClick={() => addTableCell(row.name, param.year, property)}
+														>
+															{param.properties[property].value}
+															<Divider/>
+															{param.properties[property].dateRelease}
+														</Link>
+													</TableCell>
+												))	
+												}																						
+												<TableCell>
+													{getWW(param.properties.YY.value, param.properties.ZZ.value)}					
+												</TableCell> 
+											</Fragment>
+										)							
+									})
+								}							         
 							</TableRow>
 						)
 					})}
